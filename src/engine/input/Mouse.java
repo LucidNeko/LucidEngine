@@ -17,7 +17,7 @@ import java.util.Set;
 
 /**
  * The Mouse is a class with static methods to determine mouse behaviour.
- * @author Hamish
+ * @author Hamish Rae-Hodgson.
  */
 public class Mouse implements MouseListener, MouseMotionListener, MouseWheelListener {
 	public static final int LEFT_BUTTON = MouseEvent.BUTTON1;

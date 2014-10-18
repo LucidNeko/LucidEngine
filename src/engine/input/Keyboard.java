@@ -8,7 +8,7 @@ import java.util.Set;
 
 /**
  * The Keyboard is a class with static methods to determine which keys are pressed.
- * @author Hamish
+ * @author Hamish Rae-Hodgson.
  */
 public class Keyboard extends KeyAdapter {
 	/** Singleton instance of the Keyboard */
