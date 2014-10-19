@@ -1,6 +1,6 @@
 package engine.util;
 
-import engine.components.Component;
+import engine.core.Component;
 
 /**
  * Ensure is a class that allows you ensure things about a given object.<br>
