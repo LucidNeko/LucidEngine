@@ -52,19 +52,19 @@ public class Transform extends Component implements Iterable<Transform> {
 	public Vec3 forward() {
 		if(isDirty()) 
 			recalculate();
-		return worldRotation.mul(Vec3.FORWARD);
+		return worldRotation.mul(Vec3.FORWARD());
 	}
 	
 	public Vec3 along() {
 		if(isDirty()) 
 			recalculate();
-		return worldRotation.mul(Vec3.RIGHT);
+		return worldRotation.mul(Vec3.RIGHT());
 	}
 	
 	public Vec3 up() {
 		if(isDirty())
 			recalculate();
-		return worldRotation.mul(Vec3.UP);
+		return worldRotation.mul(Vec3.UP());
 	}
 	
 	public Transform root() {
