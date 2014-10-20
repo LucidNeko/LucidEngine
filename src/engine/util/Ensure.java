@@ -1,6 +1,7 @@
 package engine.util;
 
 import engine.core.Component;
+import engine.core.Entity;
 
 /**
  * Ensure is a class that allows you ensure things about a given object.<br>
@@ -51,6 +52,12 @@ public class Ensure {
 //			if(type.isAssignableFrom(object.getClass())) //allows subtypes to fail too.
 			if(type == object.getClass())
 				throw new IllegalStateException("Object cannot be of type " + type.getName());
+			return this;
+		}
+		
+		public Ensureable ownerIs(Entity owner) {
+			if(Component.class.isAssignableFrom(object.getClass()) && ((Component)object).getOwner() != owner)
+				throw new IllegalStateException("Owner must be " + owner);
 			return this;
 		}
 
