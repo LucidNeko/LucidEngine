@@ -1,7 +1,7 @@
 package engine.components;
 
-import engine.common.AABB;
 import engine.core.Component;
+import engine.physics.AABB;
 
 /** 
  * Defines a 3D collision shape.
