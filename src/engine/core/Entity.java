@@ -15,14 +15,17 @@ import engine.util.Ensure;
  */
 public class Entity {
 	
-	//HashSet in the order Components were added
-	private final Set<Component> components = Collections.synchronizedSet(new LinkedHashSet<Component>());
-	
 	/** A unique ID in the system. */
 	private final int uniqueID;
 	
 	/** The name of this Entity */
 	private String name;
+	
+	/** This Entities components in the order they were added */
+	private final Set<Component> components = Collections.synchronizedSet(new LinkedHashSet<Component>());
+	
+	/** This Entities Transform */
+	private Transform transform;
 	
 	/**
 	 * Creates a new empty Entity with the given unique ID.<br>
@@ -39,9 +42,9 @@ public class Entity {
 	private void attachDefaultComponents() {
 		synchronized(components) {
 			//Every entity must have these components
-			Component transform = new Transform();
-			components.add(transform);
-			transform.setOwner(this);
+			this.transform = new Transform();
+			components.add(this.transform);
+			((Component)this.transform).setOwner(this);
 		}
 	}
 	
@@ -132,6 +135,8 @@ public class Entity {
 	 * @return true if the component was present and successfully detached - otherwise false.
 	 */
 	public <E extends Component> boolean detachComponent(E component) {
+		Ensure.that(component).isNotNull().isNotOfType(Transform.class).ownerIs(this);
+		
 		synchronized(components) {
 			if(this.components.remove(component)) {
 				component.setOwner(null);
@@ -169,7 +174,7 @@ public class Entity {
 	 * @return Return the Transform, or null if there is no Transform attached.
 	 */
 	public Transform getTransform() {
-		return getComponent(Transform.class);
+		return transform;
 	}
 
 	@Override
