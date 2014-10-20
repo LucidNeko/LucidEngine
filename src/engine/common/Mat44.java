@@ -151,7 +151,7 @@ public class Mat44 {
 
 		Mat44 out = new Mat44();
 		
-		if(q.magnitudeSquared() == 1) {
+		if(q.lengthSquared() == 1) {
 			//Unit Quaternion, speed hacks.
 			//m[6] and m[9] should the addition/subtraction sign be swapped? TODO: Research.
 			out.m[0] = 1 - 2*y*y - 2*z*z; out.m[4] = 2*x*y - 2*w*z;     out.m[8] = 2*x*z + 2*w*y;
