@@ -127,14 +127,14 @@ public class Transform extends Component implements Iterable<Transform> {
 	public void rotate(Vec3 axis, float thetaRadians, Space space) {
 		switch(space) {
 		case LOCAL :
-			localRotation.mulLocal(Quaternion.createRotation(axis, thetaRadians));
+			localRotation.mulLocal(Quaternion.createRotation(thetaRadians, axis));
 			setChanged();
 			break;
 		case WORLD :
 			if(isDirty()) 
 				recalculate();
 			
-			localRotation.mulLocal(Quaternion.createRotation(worldRotation.mul(axis), thetaRadians));
+			localRotation.mulLocal(Quaternion.createRotation(thetaRadians, worldRotation.mul(axis)));
 			setChanged();
 			break;
 		}
