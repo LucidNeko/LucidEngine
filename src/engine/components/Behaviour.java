@@ -16,20 +16,20 @@ public abstract class Behaviour extends Component {
 	 * Update this behaviour. Should be called every tick with the delta time.
 	 * @param delta Delta time. i.e move(100*delta) would move 100 units per second. 
 	 */
-	public abstract void update(float delta);
+	public void update(float delta){ }
 	
-	public abstract void fixedUpdate(float delta);
+	public void fixedUpdate(float delta){ }
 	
-	public abstract void onCollisionEnter(Collision collision);
+	public void onCollisionEnter(Collision collision){ }
 	
-	public abstract void onCollisionExit(Collision collision);
+	public void onCollisionExit(Collision collision){ }
 	
-	public abstract void onCollisionStay(Collision collision);
+	public void onCollisionStay(Collision collision){ }
 	
-	public abstract void onTriggerEnter(Collision collision);
+	public void onTriggerEnter(Collision collision){ }
 	
-	public abstract void onTriggerExit(Collision collision);
+	public void onTriggerExit(Collision collision){ }
 	
-	public abstract void onTriggerStay(Collision collision);
+	public void onTriggerStay(Collision collision){ }
 	
 }
