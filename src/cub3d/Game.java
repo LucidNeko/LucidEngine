@@ -24,7 +24,6 @@ import engine.opengl.Mesh;
 import engine.opengl.MeshFilter;
 import engine.opengl.MeshRenderer;
 import engine.opengl.Texture;
-import engine.physics.Collision;
 import engine.util.OBJBuilder;
 
 public class Game extends GameLoop {
@@ -61,29 +60,30 @@ public class Game extends GameLoop {
 	}
 	
 	private void setup() throws IOException {
-		Entity link = world.createEntity("Link");
-		link.attachComponent(MeshFilter.class).setMesh(new OBJBuilder(Resources.getInputStream("link.obj")).getMesh());
-		link.attachComponent(MeshRenderer.class).setMaterial(new Material(new Texture(Resources.getImage("link.png"), true), 1, 1, 1, 1));
+		Mesh mesh = new OBJBuilder(Resources.getInputStream("link.obj")).getMesh();
+		Material material = new Material(new Texture(Resources.getImage("link.png"), true), 1, 1, 1, 1);
 		
-		Mesh mesh = new OBJBuilder(Resources.getInputStream("teddy.obj")).getMesh().getScaledInstance(0.25f);
-		Material material = new Material(new Texture(Resources.getImage("teddy.png"), true), 1, 1, 1, 1);
+		Entity link = world.createEntity("Link");
+		link.attachComponent(MeshFilter.class).setMesh(mesh);
+		link.attachComponent(MeshRenderer.class).setMaterial(material);
+		
+//		mesh = new OBJBuilder(Resources.getInputStream("teddy.obj")).getMesh().getScaledInstance(0.25f);
+//		material = new Material(new Texture(Resources.getImage("teddy.png"), true), 1, 1, 1, 1);
 		Entity last = link;
 		for(int i = 0; i < 20; i++) {
 			Entity teddy = world.createEntity("Teddy" + i);
 			teddy.attachComponent(MeshFilter.class).setMesh(mesh);
 			teddy.attachComponent(MeshRenderer.class).setMaterial(material);
 			teddy.getTransform().setParent(last.getTransform());
-			teddy.getTransform().translate(0, Mathf.sin(i), -0.5f*(i+1), Space.LOCAL);
+			teddy.getTransform().translate(0, Mathf.sin(i), -0.1f*(i+1), Space.LOCAL);
 			teddy.attachComponent(new Behaviour() {
-
-				float theta = Mathf.random()*360;
-				
 				@Override
 				public void update(float delta) {
-					getOwner().getTransform().rotate(Mathf.degToRad(theta*delta), Vec3.UP(), Space.LOCAL);
+					getOwner().getTransform().rotate(Mathf.degToRad(10*delta), Vec3.UP(), Space.LOCAL);
 				}
 				
 			});
+			last = teddy;
 		}
 		
 		
