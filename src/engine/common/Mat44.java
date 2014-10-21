@@ -2,6 +2,8 @@ package engine.common;
 
 import java.util.Arrays;
 
+import engine.components.Transform;
+
 /**
  * Mat44 is a class representing a 4x4 matrix.
  * @author Hamish Rae-Hodgson
@@ -166,6 +168,20 @@ public class Mat44 {
 			out.m[15] = w*w + x*x + y*y + z*z;
 		}
 		
+		return out;
+	}
+	
+	/**
+	 * Creates a Mat44 from the world position and orientation of the Transform.
+	 * @param t The transform.
+	 * @return The matrix representing the matrix that the Transform represents.
+	 */
+	public static Mat44 createFromTransform(Transform t) {
+		Mat44 out = createFromQuaternion(t.worldRotation());
+		Vec3 position = t.worldPosition();
+		out.m[12] = position.x();
+		out.m[13] = position.y();
+		out.m[14] = position.z();
 		return out;
 	}
 	
