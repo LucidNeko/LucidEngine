@@ -74,6 +74,13 @@ public class Game extends GameLoop {
 		link.attachComponent(MeshFilter.class).setMesh(mesh);
 		link.attachComponent(MeshRenderer.class).setMaterial(material);
 		link.attachComponent(new Behaviour() {
+
+			@Override
+			public void start() {
+				// TODO Auto-generated method stub
+				
+			}
+			
 			@Override
 			public void update(float delta) {
 				Transform transform = getOwner().getTransform();
@@ -98,6 +105,13 @@ public class Game extends GameLoop {
 			teddy.getTransform().setParent(last.getTransform());
 			teddy.getTransform().translate(0, Mathf.sin(i), -0.1f*(i+5), Space.LOCAL);
 			teddy.attachComponent(new Behaviour() {
+
+				@Override
+				public void start() {
+					// TODO Auto-generated method stub
+					
+				}
+				
 				@Override
 				public void update(float delta) {
 					getOwner().getTransform().rotate(Mathf.degToRad(10*delta), Vec3.UP(), Space.LOCAL);
