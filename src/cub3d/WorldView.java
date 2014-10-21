@@ -7,6 +7,8 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.glu.GLU;
 
 import engine.common.Mat44;
+import engine.common.Quaternion;
+import engine.common.Vec3;
 import engine.core.Entity;
 import engine.core.World;
 import engine.opengl.GL2Renderer;
@@ -83,7 +85,11 @@ public class WorldView extends GameCanvas {
 		gl.glPushMatrix();
 			for(Entity entity : world.getEntities()) {
 				gl.glPushMatrix();
-					gl.glLoadMatrixf(Mat44.createFromTransform(entity.getTransform()).getData(), 0);
+//					gl.glLoadMatrixf(Mat44.createFromTransform(entity.getTransform()).getData(), 0);
+					Quaternion q = entity.getTransform().worldRotation();
+					Vec3 t = entity.getTransform().worldPosition();
+					gl.glTranslatef(t.x(), t.y(), t.z());
+					gl.glRotatef((float) (2D*Math.acos(q.w())*180f / Math.PI), q.x(), q.y(), q.z());
 					for(GL2Renderer renderer : entity.getComponents(GL2Renderer.class)) {
 						renderer.render(gl);
 					}
