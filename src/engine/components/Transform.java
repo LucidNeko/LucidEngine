@@ -1,8 +1,10 @@
 package engine.components;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import engine.common.Quaternion;
 import engine.common.Vec3;
@@ -17,7 +19,7 @@ public class Transform extends Component implements Iterable<Transform> {
 	public enum Space { LOCAL, WORLD };
 	
 	private Transform parent = null;
-	private List<Transform> children = new LinkedList<Transform>();
+	private Set<Transform> children = new HashSet<Transform>();
 	
 	private Vec3 localPosition = new Vec3();
 	private Quaternion localRotation = new Quaternion();
@@ -28,6 +30,19 @@ public class Transform extends Component implements Iterable<Transform> {
 	private boolean dirty = true;
 	
 	public Transform() { }
+	
+	public void setParent(Transform parent) {
+		//if we have a parent remove this from it's children
+		if(this.parent != null) {
+			this.parent.children.remove(this);
+		}
+		
+		//add new parent
+		this.parent = parent;
+		
+		//add this to parents children
+		this.parent.children.add(this);
+	}
 	
 	public Vec3 localPosition() {
 		return localPosition.clone();
@@ -124,17 +139,20 @@ public class Transform extends Component implements Iterable<Transform> {
 	 * @param axis
 	 * @param thetaRadians
 	 */
-	public void rotate(Vec3 axis, float thetaRadians, Space space) {
+	public void rotate(float thetaRadians, Vec3 axis, Space space) {
 		switch(space) {
 		case LOCAL :
 			localRotation.mulLocal(Quaternion.createRotation(thetaRadians, axis));
+			if(localRotation.lengthSquared() != 1) localRotation.normalize(); //no longer unit so normalize
 			setChanged();
 			break;
 		case WORLD :
 			if(isDirty()) 
 				recalculate();
 			
-			localRotation.mulLocal(Quaternion.createRotation(thetaRadians, worldRotation.mul(axis)));
+			//world conjugate * axis as it transforms axis back into world space.
+			localRotation.mulLocal(Quaternion.createRotation(thetaRadians, worldRotation.conjugate().mul(axis)));
+			if(localRotation.lengthSquared() != 1) localRotation.normalize(); //no longer unit so normalize
 			setChanged();
 			break;
 		}
@@ -173,7 +191,10 @@ public class Transform extends Component implements Iterable<Transform> {
 			return;
 		
 		if(parent != null) {
-			worldPosition.set(parent.worldPosition.add(this.localPosition));
+			worldPosition.set(parent.worldPosition);
+			worldPosition.addLocal(parent.along().mul(localPosition.x()));
+			worldPosition.addLocal(parent.up().mul(localPosition.y()));
+			worldPosition.addLocal(parent.forward().mul(localPosition.z()));
 			worldRotation.set(parent.worldRotation.mul(this.localRotation));
 			setChanged(); //set all children
 		} else {
