@@ -1,6 +1,7 @@
 package cub3d;
 
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
@@ -22,6 +23,7 @@ import engine.opengl.Material;
 import engine.opengl.Mesh;
 import engine.opengl.MeshFilter;
 import engine.opengl.MeshRenderer;
+import engine.opengl.Texture;
 import engine.physics.Collision;
 import engine.util.OBJBuilder;
 
@@ -45,7 +47,12 @@ public class Game extends GameLoop {
 		Mouse.register(view);
 		Keyboard.register(view);
 
-		setup();
+		try {
+			setup();
+		} catch (IOException e) {
+			log.error("Failed setting up game");
+			e.printStackTrace();
+		}
 		
 		frame.getContentPane().add(view);
 		
@@ -53,13 +60,13 @@ public class Game extends GameLoop {
 		frame.setVisible(true);
 	}
 	
-	private void setup() {
+	private void setup() throws IOException {
 		Entity link = world.createEntity("Link");
 		link.attachComponent(MeshFilter.class).setMesh(new OBJBuilder(Resources.getInputStream("link.obj")).getMesh());
-		link.attachComponent(MeshRenderer.class).setMaterial(new Material(Resources.getTexture("link.png", true), 1, 1, 1, 1));
+		link.attachComponent(MeshRenderer.class).setMaterial(new Material(new Texture(Resources.getImage("link.png"), true), 1, 1, 1, 1));
 		
 		Mesh mesh = new OBJBuilder(Resources.getInputStream("teddy.obj")).getMesh().getScaledInstance(0.25f);
-		Material material = new Material(Resources.getTexture("teddy.png", true), 1, 1, 1, 1);
+		Material material = new Material(new Texture(Resources.getImage("teddy.png"), true), 1, 1, 1, 1);
 		Entity last = link;
 		for(int i = 0; i < 20; i++) {
 			Entity teddy = world.createEntity("Teddy" + i);
