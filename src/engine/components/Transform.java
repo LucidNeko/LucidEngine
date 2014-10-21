@@ -31,6 +31,10 @@ public class Transform extends Component implements Iterable<Transform> {
 	
 	public Transform() { }
 	
+	public Transform getParent() {
+		return parent;
+	}
+	
 	public void setParent(Transform parent) {
 		//if we have a parent remove this from it's children
 		if(this.parent != null) {
