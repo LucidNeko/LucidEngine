@@ -46,6 +46,18 @@ public class Transform extends Component implements Iterable<Transform> {
 		
 		//add this to parents children
 		this.parent.children.add(this);
+		setChanged();
+	}
+	
+	public void detachChildren() {
+		if(children.size() == 0) return;
+		
+		for(Transform child : this) {
+			child.parent = null;
+			child.setChanged();
+		}
+		
+		children.clear();
 	}
 	
 	public Vec3 localPosition() {
@@ -90,17 +102,6 @@ public class Transform extends Component implements Iterable<Transform> {
 		if(parent != null)
 			return parent.root();
 		return this;
-	}
-	
-	public void detachChildren() {
-		if(children.size() == 0) return;
-		
-		for(Transform child : this) {
-			child.parent = null;
-			child.setChanged();
-		}
-		
-		children.clear();
 	}
 	
 	/**
