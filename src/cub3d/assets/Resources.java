@@ -42,8 +42,13 @@ public class Resources {
 	 * @return The loaded image.
 	 * @throws IOException If there is an error loading the image.
 	 */
-	public static BufferedImage getImage(String fname) throws IOException {
-		return ImageIO.read(getURL(fname));
+	public static BufferedImage getImage(String fname) {
+		try {
+			return ImageIO.read(getURL(fname));
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 }
