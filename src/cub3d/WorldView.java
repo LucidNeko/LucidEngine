@@ -2,10 +2,13 @@ package cub3d;
 
 import static javax.media.opengl.GL2.*;
 
+import java.io.IOException;
+
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.glu.GLU;
 
+import cub3d.assets.Resources;
 import engine.common.Mat44;
 import engine.common.Quaternion;
 import engine.common.Vec3;
@@ -13,6 +16,10 @@ import engine.core.Entity;
 import engine.core.World;
 import engine.opengl.GL2Renderer;
 import engine.opengl.GameCanvas;
+import engine.opengl.Material;
+import engine.opengl.Mesh;
+import engine.opengl.Texture;
+import engine.util.OBJBuilder;
 
 /**
  * The WorldView is a View of a World. Renders all the Renderer components on every Entity in the world.
@@ -21,6 +28,9 @@ import engine.opengl.GameCanvas;
  */
 public class WorldView extends GameCanvas {
 	private static final long serialVersionUID = 8996675374479682200L;
+	
+	Mesh skybox_mesh = new OBJBuilder(Resources.getInputStream("skybox.obj")).getMesh();
+	Material skybox_material = new Material(new Texture(Resources.getImage("skybox_dusk.png"), true), 1, 1, 1, 1);
 
 	//gluPerspective params
 	private static final float FIELD_OF_VIEW = 60;
@@ -69,8 +79,19 @@ public class WorldView extends GameCanvas {
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
+		
+		gl.glClear(GL_DEPTH_BUFFER_BIT);
 
-		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//clear the color buffer with the skybox.
+		gl.glPushMatrix();
+			gl.glDisable(GL_DEPTH_TEST);
+			skybox_material.bind(gl);
+			skybox_mesh.bind(gl);
+			skybox_mesh.draw(gl);
+			skybox_mesh.unbind(gl);
+			skybox_material.unbind(gl);
+			gl.glEnable(GL_DEPTH_TEST);
+		gl.glPopMatrix();
 
 		renderWorld(gl);
 
@@ -83,9 +104,10 @@ public class WorldView extends GameCanvas {
 	/** Render the world. */
 	private void renderWorld(GL2 gl) {
 		gl.glPushMatrix();
+			
+		
 			for(Entity entity : world.getEntities()) {
 				gl.glPushMatrix();
-//					gl.glLoadMatrixf(Mat44.createFromTransform(entity.getTransform()).getData(), 0);
 					Quaternion q = entity.getTransform().worldRotation();
 					Vec3 t = entity.getTransform().worldPosition();
 					gl.glTranslatef(t.x(), t.y(), t.z());
