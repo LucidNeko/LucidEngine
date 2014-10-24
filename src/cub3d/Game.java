@@ -25,6 +25,8 @@ import engine.opengl.Mesh;
 import engine.opengl.MeshFilter;
 import engine.opengl.MeshRenderer;
 import engine.opengl.Texture;
+import engine.tasks.Task;
+import engine.tasks.TaskManager;
 import engine.util.OBJBuilder;
 
 public class Game extends GameLoop {
@@ -71,6 +73,7 @@ public class Game extends GameLoop {
 		material = new Material(new Texture(Resources.getImage("link.png"), true), 1, 1, 1, 1);
 		
 		Entity link = world.createEntity("Link");
+		link.getTransform().translate(0, 0, -10, Space.WORLD);
 		link.attachComponent(MeshFilter.class).setMesh(mesh);
 		link.attachComponent(MeshRenderer.class).setMaterial(material);
 		link.attachComponent(new Behaviour() {
@@ -97,30 +100,42 @@ public class Game extends GameLoop {
 			}
 		});
 
-		Entity last = link;
-		for(int i = 0; i < 20; i++) {
-			Entity teddy = world.createEntity("Teddy" + i);
-			teddy.attachComponent(MeshFilter.class).setMesh(mesh);
-			teddy.attachComponent(MeshRenderer.class).setMaterial(material);
-			teddy.getTransform().setParent(last.getTransform());
-			teddy.getTransform().translate(0, Mathf.sin(i), -0.1f*(i+5), Space.LOCAL);
-			teddy.attachComponent(new Behaviour() {
+		final Entity flink = link;
+		final Mesh fmesh = mesh;
+		final Material fmet = material;
+		final Task task = new Task() {
+			
+			float time = 0;
+			
+			Entity last = flink;
 
-				@Override
-				public void start() {
-					// TODO Auto-generated method stub
-					
-				}
+			@Override
+			public boolean isFinished() {
+				return time > 1;
+			}
+
+			@Override
+			public Object execute(float delta) {
+				time += delta;
 				
-				@Override
-				public void update(float delta) {
-					getOwner().getTransform().rotate(Mathf.degToRad(10*delta), Vec3.UP(), Space.LOCAL);
-				}
-				
-			});
-			last = teddy;
-		}
-		
+				Entity teddy = world.createEntity("Teddy" + time);
+				teddy.attachComponent(MeshFilter.class).setMesh(fmesh);
+				teddy.attachComponent(MeshRenderer.class).setMaterial(fmet);
+				teddy.getTransform().setParent(last.getTransform());
+				teddy.getTransform().translate(0, Mathf.sin(1*time), 1*time, Space.LOCAL);
+				teddy.attachComponent(new Behaviour() { 
+					public void start() { } 
+					public void update(float delta) {
+						getOwner().getTransform().rotate(Mathf.degToRad(10*delta), Vec3.UP(), Space.LOCAL);
+					} 
+				});
+				last = teddy;
+
+				return null;
+			}
+			
+		};
+		TaskManager.addTask(task);
 		
 		
 	}
@@ -133,6 +148,8 @@ public class Game extends GameLoop {
 		for(Entity e : world.getEntities())
 			for(Behaviour b : e.getComponents(Behaviour.class))
 				b.update(delta);
+		
+		TaskManager.tick(delta);
 	}
 
 	@Override
