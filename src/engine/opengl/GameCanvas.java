@@ -30,8 +30,8 @@ public abstract class GameCanvas extends GLCanvas implements GLEventListener { /
 	 * @param width
 	 * @param height
 	 */
-	public GameCanvas(int width, int height) {
-		this(null, width, height);
+	public GameCanvas() {
+		this(null);
 	}
 
 	/**
@@ -40,9 +40,8 @@ public abstract class GameCanvas extends GLCanvas implements GLEventListener { /
 	 * @param width The preferred width.
 	 * @param height The preferred height.
 	 */
-	public GameCanvas(GLCapabilities glCapabilities, int width, int height) {
+	public GameCanvas(GLCapabilities glCapabilities) {
 		super(glCapabilities);
-		this.setPreferredSize(new Dimension(width, height));
 		this.addGLEventListener(this);
 	}
 

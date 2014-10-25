@@ -2,9 +2,7 @@ package cub3d;
 
 import java.awt.event.KeyEvent;
 import java.io.IOException;
-
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
+import java.util.concurrent.locks.LockSupport;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,8 +13,11 @@ import engine.common.Vec3;
 import engine.components.Behaviour;
 import engine.components.Transform;
 import engine.components.Transform.Space;
+import engine.core.Display;
+import engine.core.Engine;
 import engine.core.Entity;
 import engine.core.GameLoop;
+import engine.core.Time;
 import engine.core.World;
 import engine.input.Keyboard;
 import engine.input.Mouse;
@@ -29,26 +30,12 @@ import engine.tasks.Task;
 import engine.tasks.TaskManager;
 import engine.util.OBJBuilder;
 
-public class Game extends GameLoop {
+public class Game {
 	private static final Logger log = LogManager.getLogger();
-
-	private static final int FPS = 60;
-	private static final int FUPS = 30;
-	
-	World world;
-	WorldView view;
 	
 	public Game() {
-		super(FPS, FUPS);
+		Display.create(1920, 1080);
 		
-		JFrame frame = new JFrame("Game");
-		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		
-		world = new World();
-		view = new WorldView(world, 1920, 1080);
-		Mouse.register(view);
-		Keyboard.register(view);
-
 		try {
 			setup();
 		} catch (IOException e) {
@@ -56,10 +43,7 @@ public class Game extends GameLoop {
 			e.printStackTrace();
 		}
 		
-		frame.getContentPane().add(view);
-		
-		frame.pack();
-		frame.setVisible(true);
+		Engine.start();
 	}
 	
 	private void setup() throws IOException {
@@ -72,7 +56,7 @@ public class Game extends GameLoop {
 		mesh = new OBJBuilder(Resources.getInputStream("link.obj")).getMesh();
 		material = new Material(new Texture(Resources.getImage("link.png"), true), 1, 1, 1, 1);
 		
-		Entity link = world.createEntity("Link");
+		Entity link = World.createEntity("Link");
 		link.getTransform().translate(0, 0, -10, Space.WORLD);
 		link.attachComponent(MeshFilter.class).setMesh(mesh);
 		link.attachComponent(MeshRenderer.class).setMaterial(material);
@@ -85,7 +69,9 @@ public class Game extends GameLoop {
 			}
 			
 			@Override
-			public void update(float delta) {
+			public void update() {
+				float delta = Time.getDeltaTime();
+				log.trace("time={}", delta);
 				Transform transform = getOwner().getTransform();
 				if(Keyboard.isKeyDown(KeyEvent.VK_W))
 					transform.translate(0, 0, 1*delta, Space.LOCAL);
@@ -97,6 +83,10 @@ public class Game extends GameLoop {
 					transform.rotate(-Mathf.degToRad(360*delta), Vec3.UP(), Space.WORLD);		
 				if(Keyboard.isKeyDown(KeyEvent.VK_SPACE))
 					transform.rotate(Mathf.degToRad(360*delta), Vec3.RIGHT(), Space.LOCAL);
+			}
+			
+			public void fixedUpdate() {
+				log.trace("fixedTime={}", Time.getFixedDeltaTime());
 			}
 		});
 
@@ -115,18 +105,18 @@ public class Game extends GameLoop {
 			}
 
 			@Override
-			public Object execute(float delta) {
-				time += delta;
+			public Object execute() {
+				time += Time.getDeltaTime();
 				
-				Entity teddy = world.createEntity("Teddy" + time);
+				Entity teddy = World.createEntity("Teddy" + time);
 				teddy.attachComponent(MeshFilter.class).setMesh(fmesh);
 				teddy.attachComponent(MeshRenderer.class).setMaterial(fmet);
 				teddy.getTransform().setParent(last.getTransform());
 				teddy.getTransform().translate(0, Mathf.sin(1*time), 1*time, Space.LOCAL);
 				teddy.attachComponent(new Behaviour() { 
 					public void start() { } 
-					public void update(float delta) {
-						getOwner().getTransform().rotate(Mathf.degToRad(10*delta), Vec3.UP(), Space.LOCAL);
+					public void update() {
+						getOwner().getTransform().rotate(Mathf.degToRad(10*Time.getDeltaTime()), Vec3.UP(), Space.LOCAL);
 					} 
 				});
 				last = teddy;
@@ -137,33 +127,10 @@ public class Game extends GameLoop {
 		};
 		TaskManager.addTask(task);
 		
-		
-	}
-
-	@Override
-	protected void tick(float delta) {
-		if(Keyboard.isKeyDown(KeyEvent.VK_ESCAPE))
-			System.exit(0);
-		
-		for(Entity e : world.getEntities())
-			for(Behaviour b : e.getComponents(Behaviour.class))
-				b.update(delta);
-		
-		TaskManager.tick(delta);
-	}
-
-	@Override
-	protected void fixedTick(float delta) {
-		
-	}
-
-	@Override
-	protected void render() {
-		view.display();
 	}
 	
 	public static void main(String[] args) {
-		new Game().start();
+		new Game();
 	}
 
 }

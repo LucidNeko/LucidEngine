@@ -9,16 +9,20 @@ public class TaskManager {
 	
 	private static Set<Task> tasks = new HashSet<Task>();
 	
+	public static void reset() {
+		tasks.clear();
+	}
+	
 	public static void addTask(Task task) {
 		tasks.add(task);
 	}
 	
-	public static void tick(float delta) {
+	public static void tick() {
 		List<Task> _tasks = new LinkedList<Task>(tasks);
 		for(Task task : _tasks) {
 			if(task.isFinished())
 				tasks.remove(task);
-			else task.execute(delta);
+			else task.execute();
 		}
 	}
 

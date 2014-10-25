@@ -11,18 +11,16 @@ import engine.physics.Collision;
  * @author Hamish Rae-Hodgson.
  */
 public abstract class Behaviour extends Component {
-
 	
 	/** Perform initialization here. Called once before the script starts. */
 	public abstract void start();
 	
 	/**
-	 * Update this behaviour. Should be called every tick with the delta time.
-	 * @param delta Delta time. i.e move(100*delta) would move 100 units per second. 
+	 * Update this behaviour. Use Time.getDeltaTime(). 
 	 */
-	public abstract void update(float delta);
+	public abstract void update();
 	
-	public void fixedUpdate(float delta){ }
+	public void fixedUpdate(){ }
 	
 	public void onCollisionEnter(Collision collision){ }
 	

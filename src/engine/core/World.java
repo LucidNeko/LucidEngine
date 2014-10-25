@@ -15,14 +15,16 @@ import java.util.Map;
 public class World {
 
 	/** All the Entities in the world */
-	private Map<Integer, Entity> entities = Collections.synchronizedMap(new HashMap<Integer, Entity>());
+	private static Map<Integer, Entity> entities = Collections.synchronizedMap(new HashMap<Integer, Entity>());
+	
+	private World() { /* Private constructor to prevent instantiation */ }
 
 	/**
 	 * Create an Entity with the given name and register it in this world.
 	 * @param name The name of the Entity.
 	 * @return The Entity that was created and added to this world.
 	 */
-	public Entity createEntity(String name) {
+	public static Entity createEntity(String name) {
 		return createEntity(getFreeID(), name);
 	}
 
@@ -34,7 +36,7 @@ public class World {
 	 * @param name The name of the Entity.
 	 * @return The entity.
 	 */
-	public Entity createEntity(int id, String name) {
+	public static Entity createEntity(int id, String name) {
 		if(getEntity(id) != null)
 			throw new IllegalStateException("You can't create an Entity with id=" + id + " because one already exists.");
 
@@ -51,7 +53,7 @@ public class World {
 	 * @return true if the entity was in the world and it was removed<br>
 	 * false if the entity was not in the world - thus no removal was performed.
 	 */
-	public boolean destroy(Entity entity) {
+	public static boolean destroy(Entity entity) {
 		return destroyEntity(entity.getID());
 	}
 
@@ -61,7 +63,7 @@ public class World {
 	 * @return Returns true if there was an Entity with the id and it was removed.<br>
 	 * 		   Returns false if there was no Entity meaning no removal.
 	 */
-	public boolean destroyEntity(int id) {
+	public static boolean destroyEntity(int id) {
 		synchronized(entities) {
 			return entities.remove(id) != null;
 		}
@@ -72,7 +74,7 @@ public class World {
 	 * @param id The id of the Entity you want.
 	 * @return The Entity, or null if not found.
 	 */
-	public Entity getEntity(int id) {
+	public static Entity getEntity(int id) {
 		synchronized(entities) {
 			return entities.get(id);
 		}
@@ -84,7 +86,7 @@ public class World {
 	 * @param name The name of the Entity you are searching for.
 	 * @return The Entity or null if none is found.
 	 */
-	public Entity getEntity(String name) {
+	public static Entity getEntity(String name) {
 		synchronized(entities) {
 			for(Entity entity : entities.values())
 				if(entity.getName().equals(name))
@@ -98,7 +100,7 @@ public class World {
 	 * @param name The name of the Entity.
 	 * @return The list of entities. An empty list if none found. Never null.
 	 */
-	public List<Entity> getEntities(String name) {
+	public static List<Entity> getEntities(String name) {
 		List<Entity> out = new ArrayList<Entity>(2);
 		synchronized(entities) {
 			for(Entity entity : entities.values())
@@ -112,7 +114,7 @@ public class World {
 	 * Gets a snapshot of the entities currently in the world.
 	 * @return The Collection of Entities.
 	 */
-	public synchronized Collection<Entity> getEntities() {
+	public static synchronized Collection<Entity> getEntities() {
 		synchronized(entities) {
 			return new LinkedList<Entity>(entities.values());
 		}
@@ -122,7 +124,7 @@ public class World {
 	 * Gets an ID that doesn't clash with any of the other Entities in the world.
 	 * @return The available/free ID.
 	 */
-	private int getFreeID() {
+	private static int getFreeID() {
 		int id;
 		while(getEntity((id = ((int)(Math.random()*Integer.MAX_VALUE)))) != null);
 		return id;

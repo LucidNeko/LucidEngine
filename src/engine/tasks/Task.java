@@ -11,11 +11,11 @@ public abstract class Task<E> implements Iterator<E> {
 
 	@Override
 	public E next() {
-		return execute(0);
+		return execute();
 	}
 
 	public abstract boolean isFinished();
 	
-	public abstract E execute(float delta);
+	public abstract E execute();
 
 }
