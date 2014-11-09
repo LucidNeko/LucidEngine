@@ -108,6 +108,9 @@ public class Display extends GameCanvas {
 
 		//clear the color buffer with the skybox.
 		gl.glPushMatrix();
+			float[] m = Camera.getInstance().getMatrix().getData();
+			m[12] = 0; m[13] = 0; m[14] = 0; //no translation
+			gl.glLoadMatrixf(m, 0);
 			gl.glDisable(GL_DEPTH_TEST);
 			skybox_material.bind(gl);
 			skybox_mesh.bind(gl);
@@ -119,6 +122,7 @@ public class Display extends GameCanvas {
 
 		//render world
 		gl.glPushMatrix();
+			gl.glLoadMatrixf(Camera.getInstance().getMatrix().getData(), 0);
 			for(Entity entity : World.getEntities()) {
 				gl.glPushMatrix();
 					Quaternion q = entity.getTransform().worldRotation();
