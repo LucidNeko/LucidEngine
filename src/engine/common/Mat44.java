@@ -33,6 +33,21 @@ public class Mat44 {
 		m = Arrays.copyOf(source.m, 16);
 	}
 	
+	public Mat44(float m00, float m04, float m08, float m12,
+			 	 float m01, float m05, float m09, float m13,
+			 	 float m02, float m06, float m10, float m14,
+			 	 float m03, float m07, float m11, float m15) {
+		
+		//Only LOOKS inverted because of the in memory layout.
+		m = new float[] {
+				m00, m01, m02, m03,
+				m04, m05, m06, m07,
+				m08, m09, m10, m11,
+				m12, m13, m14, m15,
+		};
+		
+	}
+	
 	/**
 	 * Returns the matrix resulting from (this matrix (MULTIPLY) other matrix)<br>
 	 * DOES NOT MODIFY LOCALLY.
@@ -62,6 +77,8 @@ public class Mat44 {
 		out.m[15] = this.m[3]*other.m[12] + this.m[7]*other.m[13] + this.m[11]*other.m[14] + this.m[15]*other.m[15];
 		return out;
 	}
+	
+	
 	
 	/**
 	 * Returns the vector resulting from (this matrix (MULTIPLY) vector).<br>
