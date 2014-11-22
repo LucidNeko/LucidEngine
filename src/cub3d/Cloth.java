@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.media.opengl.GL2;
 
+import engine.common.Mathf;
 import engine.common.Vec3;
 import engine.components.Behaviour;
 import engine.core.Time;
@@ -76,8 +77,10 @@ public class Cloth extends Behaviour {
 
 	@Override
 	public void update() {
-		integrate(Time.getDeltaTime()*Time.getDeltaTime());
-		solve();
+		for(int i = 0; i < 5; i++) {
+			integrate(Time.getDeltaTime()*Time.getDeltaTime());
+			solve();
+		}
 	}
 
 	private void reset() {
@@ -144,6 +147,20 @@ public class Cloth extends Behaviour {
 									gl.glNormal3f(normal.x(), normal.y(), normal.z());
 								gl.glEnd();
 							}
+							
+							//tri 1 - rev
+							{
+								Vec3 normal = (b.sub(a)).cross(d.sub(a));
+								normal.normalize();
+								gl.glBegin(GL2.GL_TRIANGLES);
+									gl.glVertex3f(b.x(), b.y(), b.z());
+									gl.glNormal3f(-normal.x(), -normal.y(), -normal.z());
+									gl.glVertex3f(a.x(), a.y(), a.z());
+									gl.glNormal3f(-normal.x(), -normal.y(), -normal.z());
+									gl.glVertex3f(d.x(), d.y(), d.z());
+									gl.glNormal3f(-normal.x(), -normal.y(), -normal.z());
+								gl.glEnd();
+							}
 
 							//tri 2
 							{
@@ -156,6 +173,20 @@ public class Cloth extends Behaviour {
 									gl.glNormal3f(normal.x(), normal.y(), normal.z());
 									gl.glVertex3f(c.x(), c.y(), c.z());
 									gl.glNormal3f(normal.x(), normal.y(), normal.z());
+								gl.glEnd();
+							}
+							
+							//tri 2 - rev
+							{
+								Vec3 normal = (b.sub(d)).cross(c.sub(d));
+								normal.normalize();
+								gl.glBegin(GL2.GL_TRIANGLES);
+									gl.glVertex3f(b.x(), b.y(), b.z());
+									gl.glNormal3f(-normal.x(), -normal.y(), -normal.z());
+									gl.glVertex3f(d.x(), d.y(), d.z());
+									gl.glNormal3f(-normal.x(), -normal.y(), -normal.z());
+									gl.glVertex3f(c.x(), c.y(), c.z());
+									gl.glNormal3f(-normal.x(), -normal.y(), -normal.z());
 								gl.glEnd();
 							}
 						} catch(Exception e) {
@@ -178,7 +209,8 @@ public class Cloth extends Behaviour {
 			@Override
 			public void update() {
 				if(Keyboard.isKeyDown(KeyEvent.VK_P)) {
-					ps[ps.length-1][ps[0].length-1].pos.addLocal(0, 0, 1*Time.getDeltaTime());
+					ps[ps.length-1][0].pos.addLocal(0, 0, 100*Time.getDeltaTime());
+					ps[ps.length-1][ps[0].length-1].pos.addLocal(0, 0, 100*Time.getDeltaTime());
 				}
 			}
 
@@ -186,7 +218,7 @@ public class Cloth extends Behaviour {
 	}
 
 	private void integrate(float deltaSquared) {
-		for(int i = 0; i < 2; i++)
+//		for(int i = 0; i < 2; i++)
 			for(Particle p : particles)
 				p.integrate(deltaSquared);
 	}
